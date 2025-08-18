@@ -7,8 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Abstractions\" />
-    <Folder Include="DTOs\" />
+    <ProjectReference Include="..\ToDoListApp.Domain\ToDoListApp.Domain.csproj" />
   </ItemGroup>
 
 </Project>
