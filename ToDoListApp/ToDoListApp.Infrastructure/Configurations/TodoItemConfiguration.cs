@@ -10,14 +10,14 @@ public class TodoItemConfiguration : IEntityTypeConfiguration<TodoItem>
     public void Configure(EntityTypeBuilder<TodoItem> builder)
     {
         builder.HasKey(t => t.Id);
-        builder.Property(x => x.Name)
+        builder.Property(t => t.Name)
             .IsRequired()
             .HasMaxLength(50);
-        builder.Property(x => x.Description)
+        builder.Property(t => t.Description)
             .HasMaxLength(150);
-        builder.Property(x => x.TodoStatus)
+        builder.Property(t => t.TodoStatus)
             .HasDefaultValue(TodoStatus.Todo);
-        builder.Property(x => x.IsDeleted)
+        builder.Property(t => t.IsDeleted)
             .HasDefaultValue(false);
     }
 }

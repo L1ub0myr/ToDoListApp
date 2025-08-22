@@ -9,11 +9,4 @@ public class TodoItemRepository : GenericRepository<TodoItem>, ITodoItemReposito
     public TodoItemRepository(DbContext context) : base(context)
     {
     }
-
-    public async Task DeleteAsync(int id)
-    {
-        var entity = await GetAsync(id);
-        if (entity != null)
-            entity.IsDeleted = true;
-    }
 }
