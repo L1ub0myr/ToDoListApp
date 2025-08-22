@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ToDoListApp.Domain.Enums;
 using ToDoListApp.Domain.Models;
 
-namespace ToDoListApp.Infrastructure.Data.Configurations;
+namespace ToDoListApp.Infrastructure.Configurations;
 
 public class TodoItemConfiguration : IEntityTypeConfiguration<TodoItem>
 {
