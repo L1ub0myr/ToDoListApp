@@ -2,8 +2,7 @@
 using ToDoListApp.Application.Abstractions.Services;
 using ToDoListApp.Application.Abstractions.UnitOfWork;
 using ToDoListApp.Application.DTOs;
-using ToDoListApp.Domain.Enums;
-using ToDoListApp.Domain.Models;
+using ToDoListApp.Infrastructure.Mapping;
 
 namespace ToDoListApp.Infrastructure.Services;
 
@@ -22,50 +21,27 @@ public class TodoItemService : ITodoItemService
     {
         var items = await _todoItemRepository.GetAllAsync();
         return items.Where(item => item.IsDeleted == false)
-                    .Select(item => new GetTodoItemDTO 
-                    {
-                        Id = item.Id,
-                        Name = item.Name,
-                        Description = item.Description,
-                        TodoStatus = item.TodoStatus,
-                    });
+                    .Select(TodoItemMapper.ToGetDTO);
     }
 
     public async Task<IEnumerable<GetTodoItemDTO>> GetAllDeletedAsync()
     {
         var items = await _todoItemRepository.GetAllAsync();
         return items.Where(item => item.IsDeleted == true)
-                    .Select(item => new GetTodoItemDTO
-                    {
-                        Id = item.Id,
-                        Name = item.Name,
-                        Description = item.Description,
-                        TodoStatus = item.TodoStatus,
-                    });
+                    .Select(TodoItemMapper.ToGetDTO);
     }
 
     public async Task<GetTodoItemDTO> GetAsync(int id)
     {
         var item = await _todoItemRepository.GetAsync(id);
         if (item != null && !item.IsDeleted) 
-            return new GetTodoItemDTO
-                {
-                    Id = item.Id,
-                    Name = item.Name,
-                    Description = item.Description,
-                    TodoStatus = item.TodoStatus,
-                };
+            return TodoItemMapper.ToGetDTO(item);
         return null;
     }
 
     public async Task CreateAsync(CreateTodoItemDTO todoItem)
     {
-        await _todoItemRepository.AddAsync(new TodoItem 
-        {
-            Name = todoItem.Name,
-            Description = todoItem.Description,
-            CreatedDate = DateTime.UtcNow,
-        });
+        await _todoItemRepository.AddAsync(TodoItemMapper.FromCreateDTO(todoItem));
         await _unitOfWork.CommitAsync();
     }
 
@@ -81,9 +57,12 @@ public class TodoItemService : ITodoItemService
     public async Task RestoreAsync(int id)
     {
         var item = await _todoItemRepository.GetAsync(id);
-        if (item != null && item.IsDeleted != false)
-            item.IsDeleted = false;
-            await _unitOfWork.CommitAsync();
+        if (item == null)
+            throw new KeyNotFoundException($"TodoItem not found");
+        if (!item.IsDeleted)
+            throw new InvalidOperationException($"TodoItem with Id {item.Id} is deleted");
+        item.IsDeleted = false;
+        await _unitOfWork.CommitAsync();
     }
 
     public async Task UpdateAsync(UpdateTodoItemDTO updatedTodoItem)

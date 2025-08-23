@@ -42,29 +42,15 @@ public class TodoItemController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> Update(UpdateTodoItemDTO updateTodoItem)
     {
-        try
-        {
-            await _todoService.UpdateAsync(updateTodoItem);
-            return NoContent();
-        }
-        catch (InvalidOperationException)
-        {
-            return NotFound();
-        }
+        await _todoService.UpdateAsync(updateTodoItem);
+        return NoContent();
     }
 
     [HttpPatch]
     public async Task<IActionResult> ChangeStatus(ChangeTodoStatusDTO changeTodoStatus)
     {
-        try
-        {
-            await _todoService.ChangeStatusAsync(changeTodoStatus);
-            return NoContent();
-        }
-        catch (KeyNotFoundException)
-        {
-            return BadRequest();
-        }
+        await _todoService.ChangeStatusAsync(changeTodoStatus);
+        return NoContent();
     }
 
     [HttpDelete("{id}")]

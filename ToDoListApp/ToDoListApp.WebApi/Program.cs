@@ -5,6 +5,7 @@ using ToDoListApp.Application.Abstractions.UnitOfWork;
 using ToDoListApp.Infrastructure.Data;
 using ToDoListApp.Infrastructure.Services;
 using ToDoListApp.Infrastructure.UnitOfWork;
+using ToDoListApp.WebApi.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,5 +37,6 @@ app.MapControllers();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.Run();
