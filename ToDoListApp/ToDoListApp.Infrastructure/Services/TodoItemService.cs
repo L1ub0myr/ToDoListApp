@@ -49,7 +49,7 @@ public class TodoItemService : ITodoItemService
     {
         var item = await _todoItemRepository.GetAsync(id);
         if (item == null || item.IsDeleted)
-            return;
+            throw new InvalidOperationException($"TodoItem with not found or deleted");
         item.IsDeleted = true;
         await _unitOfWork.CommitAsync();
     }
