@@ -1,4 +1,4 @@
-﻿using ToDoListApp.Domain.Enums;
+﻿using ToDoListApp.Domain.Models;
 
 namespace ToDoListApp.Application.DTOs;
 

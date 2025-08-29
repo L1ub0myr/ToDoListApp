@@ -1,6 +1,6 @@
 ﻿using ToDoListApp.Application.DTOs;
 
-namespace ToDoListApp.Application.Abstractions.Services;
+namespace ToDoListApp.Application.Interfaces;
 
 public interface ITodoItemService
 {

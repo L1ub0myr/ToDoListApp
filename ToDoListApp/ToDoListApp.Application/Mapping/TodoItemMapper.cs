@@ -1,7 +1,7 @@
 ﻿using ToDoListApp.Application.DTOs;
 using ToDoListApp.Domain.Models;
 
-namespace ToDoListApp.Infrastructure.Mapping;
+namespace ToDoListApp.Application.Mapping;
 
 public static class TodoItemMapper
 {
@@ -13,6 +13,8 @@ public static class TodoItemMapper
             Name = todoItem.Name,
             Description = todoItem.Description,
             TodoStatus = todoItem.TodoStatus,
+            UpdatedDate = todoItem.UpdatedDate,
+            CreatedDate = todoItem.CreatedDate
         };
     }
 

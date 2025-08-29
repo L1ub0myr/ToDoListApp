@@ -1,4 +1,4 @@
-﻿namespace ToDoListApp.Domain.Enums;
+﻿namespace ToDoListApp.Domain.Models;
 
 public enum TodoStatus
 {

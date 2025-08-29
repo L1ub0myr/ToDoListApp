@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ToDoListApp.Application.Abstractions.Services;
 using ToDoListApp.Application.DTOs;
+using ToDoListApp.Application.Interfaces;
 
 namespace ToDoListApp.WebApi.Controllers;
 

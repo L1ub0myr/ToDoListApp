@@ -1,20 +1,16 @@
-﻿using ToDoListApp.Application.Abstractions.Repositories;
-using ToDoListApp.Application.Abstractions.Services;
-using ToDoListApp.Application.Abstractions.UnitOfWork;
-using ToDoListApp.Application.DTOs;
-using ToDoListApp.Infrastructure.Mapping;
+﻿using ToDoListApp.Application.DTOs;
+using ToDoListApp.Application.Interfaces;
+using ToDoListApp.Application.Mapping;
 
-namespace ToDoListApp.Infrastructure.Services;
+namespace ToDoListApp.Application.Services;
 
 public class TodoItemService : ITodoItemService
 {
-    private IUnitOfWork _unitOfWork;
     private ITodoItemRepository _todoItemRepository;
 
-    public TodoItemService(IUnitOfWork unitOfWork)
+    public TodoItemService(ITodoItemRepository todoRepository)
     {
-        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        _todoItemRepository = _unitOfWork.TodoItemRepository;
+        _todoItemRepository = todoRepository;
     }
 
     public async Task<IEnumerable<GetTodoItemDTO>> GetAllAsync()
@@ -34,24 +30,30 @@ public class TodoItemService : ITodoItemService
     public async Task<GetTodoItemDTO> GetAsync(int id)
     {
         var item = await _todoItemRepository.GetAsync(id);
-        if (item != null && !item.IsDeleted) 
-            return TodoItemMapper.ToGetDTO(item);
-        return null;
+        if (item == null)
+            throw new KeyNotFoundException("TodoItem not found");
+        if (item.IsDeleted)
+            throw new InvalidOperationException($"TodoItem with Id: {item.Id} deleted");
+        return TodoItemMapper.ToGetDTO(item);
     }
 
     public async Task CreateAsync(CreateTodoItemDTO todoItem)
     {
         await _todoItemRepository.AddAsync(TodoItemMapper.FromCreateDTO(todoItem));
-        await _unitOfWork.CommitAsync();
     }
 
     public async Task DeleteAsync(int id)
     {
         var item = await _todoItemRepository.GetAsync(id);
-        if (item == null || item.IsDeleted)
-            throw new InvalidOperationException($"TodoItem with not found or deleted");
-        item.IsDeleted = true;
-        await _unitOfWork.CommitAsync();
+        
+        if (item == null)
+            throw new KeyNotFoundException($"TodoItem with id: {id} not found");
+        
+        if (!item.IsDeleted)
+        {
+            item.IsDeleted = true;
+            await _todoItemRepository.UpdateAsync(item);
+        }
     }
 
     public async Task RestoreAsync(int id)
@@ -60,17 +62,18 @@ public class TodoItemService : ITodoItemService
         if (item == null)
             throw new KeyNotFoundException($"TodoItem not found");
         if (!item.IsDeleted)
-            throw new InvalidOperationException($"TodoItem with Id {item.Id} is deleted");
+            throw new InvalidOperationException($"TodoItem with Id: {item.Id} is not deleted");
+
         item.IsDeleted = false;
-        await _unitOfWork.CommitAsync();
+        await _todoItemRepository.UpdateAsync(item);
     }
 
     public async Task UpdateAsync(UpdateTodoItemDTO updatedTodoItem)
     {
         var item = await _todoItemRepository.GetAsync(updatedTodoItem.Id);
-        if (item == null || item.IsDeleted)
+        if (item == null)
         {
-            throw new KeyNotFoundException($"TodoItem with Id {updatedTodoItem.Id} not found or deleted.");
+            throw new KeyNotFoundException($"TodoItem with Id: {updatedTodoItem.Id} not found.");
         }
 
         item.Name = updatedTodoItem.Name;
@@ -79,14 +82,18 @@ public class TodoItemService : ITodoItemService
         item.UpdatedDate = DateTime.UtcNow;
 
         await _todoItemRepository.UpdateAsync(item);
-        await _unitOfWork.CommitAsync();
     }
 
     public async Task ChangeStatusAsync(ChangeTodoStatusDTO changeTodoStatus)
     {
         var item = await _todoItemRepository.GetAsync(changeTodoStatus.Id);
-        if (item != null && item.TodoStatus != changeTodoStatus.NewStatus)
+        if (item == null)
+            throw new KeyNotFoundException($"TodoItem with Id: {changeTodoStatus.Id} not found");
+
+        if (item.TodoStatus != changeTodoStatus.NewStatus)
+        {
             item.TodoStatus = changeTodoStatus.NewStatus;
-            await _unitOfWork.CommitAsync();
+            await _todoItemRepository.UpdateAsync(item);
+        }
     }
 }

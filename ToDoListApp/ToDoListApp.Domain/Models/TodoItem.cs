@@ -1,6 +1,4 @@
-﻿using ToDoListApp.Domain.Enums;
-
-namespace ToDoListApp.Domain.Models;
+﻿namespace ToDoListApp.Domain.Models;
 
 public class TodoItem
 {

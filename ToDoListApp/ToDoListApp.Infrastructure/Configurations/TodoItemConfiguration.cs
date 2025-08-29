@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using ToDoListApp.Domain.Enums;
 using ToDoListApp.Domain.Models;
 
 namespace ToDoListApp.Infrastructure.Configurations;
